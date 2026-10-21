@@ -1,0 +1,7 @@
+{
+  "name": "Pollination AI - Decentralized Inference Gateway",
+  "description": "Decentralized proxy gateway for Pollinations video/image/text models",
+  "version": "1.0.0",
+  "nodes": "global",
+  "protocol": "pollinations-gen"
+}
