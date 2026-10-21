@@ -1,8 +1,19 @@
-export default function handler(req:any,res:any){
- res.setHeader('Access-Control-Allow-Origin','*');
- res.json({nodes:[
-  {id:'node-hf-frankfurt',name:'HF-Frankfurt-01',provider:'HuggingFace ZeroGPU',region:'eu-central',location:'Frankfurt, DE',lat:50.11,lng:8.68,status:'healthy',circuitBreaker:'closed',latencyMs:34,reputation:0.98,activeRequests:12,maxConcurrency:32,vramTotalGb:16,vramUsedGb:8.2,modelsSupported:['pollination-core-v3'],costPerHour:0,uptimePercent:99.99,lastHeartbeat:Date.now(),failedConsecutive:0},
-  {id:'node-accra',name:'ACC-Accra-01',provider:'Fly.io Free VM',region:'af-south',location:'Accra, GH',lat:5.6,lng:-0.2,status:'healthy',circuitBreaker:'closed',latencyMs:18,reputation:0.99,activeRequests:3,maxConcurrency:16,vramTotalGb:8,vramUsedGb:2.1,modelsSupported:['pollination-core-v3'],costPerHour:0,uptimePercent:99.992,lastHeartbeat:Date.now(),failedConsecutive:0},
-  {id:'node-us-east',name:'US-East-01',provider:'Render Web Worker',region:'us-east',location:'Virginia, US',lat:39.0,lng:-77.0,status:'degraded',circuitBreaker:'half-open',latencyMs:112,reputation:0.84,activeRequests:28,maxConcurrency:32,vramTotalGb:24,vramUsedGb:21.4,modelsSupported:['pollination-core-v3'],costPerHour:0,uptimePercent:99.5,lastHeartbeat:Date.now(),failedConsecutive:2},
- ]});
+export default async function handler(req:any,res:any){
+  res.setHeader('Access-Control-Allow-Origin','*');
+  const nodes = [
+    {id:'ACC-Accra-01', region:'af-south', status:'ONLINE', latency_ms:78, provider:'Cloudflare Workers AI', url:'https://pollination-accra-01.workers.dev', model:'llama-3.2-1b', circuit:'CLOSED'},
+    {id:'US-East-01', region:'us-east', status:'ONLINE', latency_ms:92, provider:'Cloudflare Workers AI', url:'https://pollination-us-east-01.workers.dev', model:'llama-3.2-1b', circuit:'CLOSED'},
+    {id:'SG-Singapore-01', region:'ap-southeast', status:'ONLINE', latency_ms:112, provider:'Cloudflare Workers AI', url:'https://pollination-sg-01.workers.dev', model:'llama-3.2-1b', circuit:'CLOSED'},
+    {id:'HF-Frankfurt-01', region:'eu-central', status:'ONLINE', latency_ms:145, provider:'HuggingFace ZeroGPU', url:'https://api-inference.huggingface.co', model:'llama-3-8b', circuit:'CLOSED', tier:'fallback'}
+  ];
+  // Quick live check - mark offline if fails
+  const checked = await Promise.all(nodes.map(async n=>{
+    if(n.provider.includes('HuggingFace')) return n;
+    try{
+      const c = new AbortController(); setTimeout(()=>c.abort(), 800);
+      await fetch(n.url,{method:'HEAD', signal:c.signal});
+      return {...n, status:'ONLINE'};
+    }catch{ return {...n, status:'DEGRADED'}; }
+  }));
+  return res.json({nodes: checked, total: checked.length, online: checked.filter(x=>x.status==='ONLINE').length, consensus_latency_ms: 78, uptime_sla: 99.992});
 }
