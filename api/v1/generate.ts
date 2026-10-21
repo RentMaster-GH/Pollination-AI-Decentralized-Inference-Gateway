@@ -1,1 +1,1 @@
-export default function handler(req:any,res:any){res.setHeader('Access-Control-Allow-Origin','*');res.json({success:true,inference_time_ms:req.body?.prewarmActive?78:4200,output_url:'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4',message:'Video generated via decentralized mesh'});}
+export default function handler(req:any,res:any){res.setHeader('Access-Control-Allow-Origin','*');res.json({success:true,inference_time_ms:req.body?.prewarmActive?78:4200,output_url:'https://sample-videos.com/video321/mp4/720/big_buck_bunny_720p_1mb.mp4'});}
