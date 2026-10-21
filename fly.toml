@@ -1,0 +1,8 @@
+app = "pollination-accra-01"
+primary_region = "ams" # closest to Accra - Fly free tier
+[http_service]
+  internal_port = 3000
+  auto_stop_machines = false
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "2gb"
