@@ -1,0 +1,1 @@
+export default function handler(req:any,res:any){res.setHeader('Access-Control-Allow-Origin','*');res.json({data:[{id:'pollination-core-v3',name:'Competitor Mesh Core v3',type:'text',context_length:32000,provider:'Your Mesh'},{id:'video-accel-v1',name:'VideoAccel V1 - Cold Start Optimized',type:'video',context_length:8000,provider:'Your Mesh'}]});}
