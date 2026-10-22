@@ -1,1 +1,0 @@
-export default function handler(req:any,res:any){res.setHeader('Access-Control-Allow-Origin','*');res.json({models:[{modelId:'video-accel-v1',name:'VideoAccel V1',weightSizeGb:12.4,isPrewarmed:true,hotNodes:['node-accra','node-hf-frankfurt'],coldStartTraditionalSec:4.2,pollinationFastStartSec:0.078,cachedLayers:28,totalLayers:28}]});}
