@@ -1,6 +1,0 @@
-{
-  "name": "Pollination AI - Decentralized Inference Gateway",
-  "description": "Enterprise-grade aggregate AI API gateway with load-balanced consensus routing, automated failover, free cloud compute optimization, and video cold-start acceleration.",
-  "requestFramePermissions": [],
-  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
-}
