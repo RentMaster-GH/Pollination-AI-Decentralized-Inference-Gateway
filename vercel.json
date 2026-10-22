@@ -1,11 +1,3 @@
 {
-  "rewrites":[
-    {"source":"/api/v1/video/status","destination":"/api/v1/nodes"},
-    {"source":"/api/v1/video/prewarm","destination":"/api/v1/nodes"},
-    {"source":"/api/v1/generate","destination":"/api/v1/chat"},
-    {"source":"/api/v1/chat/completions","destination":"/api/v1/chat"},
-    {"source":"/api/v1/keys","destination":"/api/v1/nodes"},
-    {"source":"/api/v1/logs","destination":"/api/v1/nodes"},
-    {"source":"/api/v1/metrics","destination":"/api/v1/nodes"}
-  ]
+  "rewrites": [{ "source": "/api/(.*)", "destination": "/api/$1" }]
 }
