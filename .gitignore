@@ -1,2 +1,7 @@
+node_modules
+dist
+.env
+.wrangler
 .vercel
-.env*
+fly.toml
+Dockerfile

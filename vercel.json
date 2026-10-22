@@ -1,0 +1,9 @@
+{
+  "rewrites":[
+    {"source":"/api/v1/video/status","destination":"/api/v1/nodes"},
+    {"source":"/api/v1/video/prewarm","destination":"/api/v1/nodes"},
+    {"source":"/api/v1/generate","destination":"/api/v1/chat"},
+    {"source":"/api/v1/chat/completions","destination":"/api/v1/chat"},
+    {"source":"/api/v1/video/generate","destination":"/api/v1/chat"}
+  ]
+}
