@@ -6,7 +6,7 @@ import { GeoMeshMap } from './components/GeoMeshMap';
 const API_BASE =
   (import.meta as any).env?.VITE_API_URL ||
   (typeof window !== 'undefined' && window.location.hostname !== 'localhost'
-    ? 'https://credibleartisans.com'
+    ? 'https://pollination.credibleartisans.com'
     : 'http://localhost:3006');
 
 export default function App() {
