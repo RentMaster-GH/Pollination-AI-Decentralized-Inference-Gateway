@@ -65,6 +65,7 @@ const server = createServer(async (req, res) => {
       if (key) await pool.query('UPDATE api_keys SET credits = GREATEST(credits - 1, 0), total_requests = total_requests + 1 WHERE key_value = $1', [key]);
       const out = 'https://pollinations.ai' + encodeURIComponent(prompt) + '?width=1280&height=720&nologo=true&model=turbo';
       await pool.query('INSERT INTO inference_logs (key_value, model, prompt, output_url) VALUES ($1, $2, $3, $4)', [key || 'anon', 'turbo', prompt, out]);
+      if (url.searchParams.get('redirect') === 'true') { res.writeHead(302, { Location: out, 'Access-Control-Allow-Origin': '*' }); return res.end(); }
       json(res, { success: true, url: out, videoUrl: out, prompt, node: 'HP-EliteBook-01' });
     });
     return;
