@@ -1,4 +1,8 @@
-import { createServer } from 'http'
+import { createServer } from 'http';
+import pg from 'pg';
+import dotenv from 'dotenv';
+dotenv.config();
+const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 
 // Self-hosted mesh state - NO POLLINATION KEYS
 const nodes = [
@@ -33,8 +37,41 @@ const server = createServer(async (req, res) => {
   }
   if (url.pathname.startsWith('/api/v1/nodes/chaos') || url.pathname.startsWith('/api/v1/nodes/register') || url.pathname.startsWith('/api/v1/video/prewarm') || url.pathname.startsWith('/api/v1/generate')) return json(res, { success:true, message:'Mock success - competitive gateway' })
 
-  // Serve static for local vite preview? just 404 for api
+  if (url.pathname === '/api/health' || url.pathname === '/api') {
+    const r = await pool.query('SELECT COUNT(*)::int AS count FROM api_keys');
+    return json(res, { status: 'ok', database: 'pollination_db', keys: r.rows[0]?.count || 0 });
+  }
+  if (url.pathname === '/api/keys/generate' || url.pathname === '/api/keys/create') {
+    let body = ''; req.on('data', c => body += c);
+    req.on('end', async () => {
+      const { email = 'user@credibleartisans.com' } = JSON.parse(body || '{}');
+      const key = 'omni_' + Math.random().toString(36).slice(2, 12) + Date.now().toString(36);
+      await pool.query('INSERT INTO api_keys (key_value, email, credits) VALUES ($1, $2, 100)', [key, email]);
+      json(res, { success: true, key, apiKey: key, email, credits: 100, balance: 100 });
+    });
+    return;
+  }
+  if (url.pathname === '/api/keys/balance') {
+    const key = url.searchParams.get('key') || req.headers['x-api-key'];
+    const r = await pool.query('SELECT * FROM api_keys WHERE key_value = $1', [key]);
+    return r.rows.length ? json(res, { key, credits: r.rows[0].credits, balance: r.rows[0].credits }) : json(res, { error: 'Invalid key' });
+  }
+  if (url.pathname === '/api/generate' || url.pathname === '/api/video') {
+    let body = ''; req.on('data', c => body += c);
+    req.on('end', async () => {
+      const parsed = JSON.parse(body || '{}');
+      const prompt = parsed.prompt || url.searchParams.get('prompt') || 'landscape';
+      const key = req.headers['x-api-key'] || parsed.apiKey || url.searchParams.get('key');
+      if (key) await pool.query('UPDATE api_keys SET credits = GREATEST(credits - 1, 0), total_requests = total_requests + 1 WHERE key_value = $1', [key]);
+      const out = 'https://pollinations.ai' + encodeURIComponent(prompt) + '?width=1280&height=720&nologo=true&model=turbo';
+      await pool.query('INSERT INTO inference_logs (key_value, model, prompt, output_url) VALUES ($1, $2, $3, $4)', [key || 'anon', 'turbo', prompt, out]);
+      json(res, { success: true, url: out, videoUrl: out, prompt, node: 'HP-EliteBook-01' });
+    });
+    return;
+  }
+
+  // Serve static just 404 for api
   res.writeHead(404); res.end('Not found: '+url.pathname)
 })
 
-server.listen(3000, () => console.log('✅ Decentralized Gateway mock API running on http://localhost:3000 - independent, no external keys'))
+server.listen(3006, () => console.log('✅ Decentralized Gateway mock API running on http://localhost:3000 - independent, no external keys'))
