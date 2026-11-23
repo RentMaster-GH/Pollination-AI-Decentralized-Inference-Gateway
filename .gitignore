@@ -5,3 +5,4 @@ dist
 .vercel
 fly.toml
 Dockerfile
+.env.local
